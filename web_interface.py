@@ -240,50 +240,51 @@ if submit_button:
             link_to_visit = "Visit the website for more details on how to prevent heart strokes"
             st.info(link_to_visit)
 
-    # File Prediction Page Section
-    with st.sidebar.expander("Upload file for Predictions"):
-        with st.form(key="predictions", clear_on_submit=True) as form:
-            st.title("Select a file to generate predictions")
-            uploaded_files =st.file_uploader("Choose a CSV file", type={"csv"})
-            prediction_button = st.form_submit_button("Submit")
-            if uploaded_files:
-                filename = uploaded_files.name
-
-    if prediction_button:
+# File Prediction Page Section
+with st.sidebar.expander("Upload file for Predictions"):
+    with st.form(key="predictions", clear_on_submit=True) as form:
+        st.title("Select a file to generate predictions")
+        uploaded_files =st.file_uploader("Choose a CSV file", type={"csv"})
+        prediction_button = st.form_submit_button("Submit")
         if uploaded_files:
-            data = pd.read_csv(uploaded_files)
-            data = get_prediction_document(filename, data)
-            if data.shape[0] > 0:
-                data_frame_style_display(data)
-                st.success("Uploaded successfully!")
-            else:
-                st.warning("Please upload a csv file")
+            filename = uploaded_files.name
 
-    # Prediction retrival page section
-    with st.sidebar.expander("Retrieve Past Predictions"):
-        button = None
-        st.title("Select a search mode")
-        option = st.selectbox('Search Mode', ('< Select Option >', 'Per Patient', 'Window Period', 'Per file'))
-        with st.form(key="Retrieve patients predictions by fullname", clear_on_submit=True) as form_1:
-            # Per patient fullname search:
-            if option == "Per Patient":
-                st.title("Patient fullname")
-                search_patient_first_name = st.text_input(label="First Name")
-                search_patient_last_name = st.text_input(label="Last Name")
-                button =  st.form_submit_button("Get Patient Records")
+if prediction_button:
+    if uploaded_files:
+        data = pd.read_csv(uploaded_files)
+        data = get_prediction_document(filename, data)
+        if data.shape[0] > 0:
+            data_frame_style_display(data)
+            st.success("Uploaded successfully!")
+    else:
+        st.warning("Please upload a csv file")
 
-            elif option == "Window Period":
-                st.title("Select a window period")
-                search_patient_from_date = st.date_input("From Date", datetime.today()-relativedelta(years=1))
-                search_patient_to_date = st.date_input("To Date", datetime.today())
-                button = st.form_submit_button("Get Patients Records")
+# Prediction retrival page section
+with st.sidebar.expander("Retrieve Past Predictions"):
+    button = None
+    st.title("Select a search mode")
+    option = st.selectbox('Search Mode', ('< Select Option >', 'Per Patient', 'Window Period', 'Per file'))
 
-            elif option == "Per file":
-                st.title("Enter File Details")
-                st.text("No File extension is required")
-                search_file_name = st.text_input(label="File Name")
-                search_created_on = st.date_input("Created on", datetime.today())
-                button = st.form_submit_button("Get File records")
+    with st.form(key="Retrieve patients predictions by fullname", clear_on_submit=True) as form_1:
+        # Per patient fullname search:
+        if option == "Per Patient":
+            st.title("Patient fullname")
+            search_patient_first_name = st.text_input(label="First Name")
+            search_patient_last_name = st.text_input(label="Last Name")
+            button = st.form_submit_button("Get Patient Records")
+
+        elif option == "Window Period":
+            st.title("Select a window period")
+            search_patient_from_date = st.date_input("From Date", datetime.today()-relativedelta(years=1))
+            search_patient_to_date = st.date_input("To Date", datetime.today())
+            button = st.form_submit_button("Get Patients Records")
+
+        elif option == "Per file":
+            st.title("Enter File Details")
+            st.text("No File extension is required")
+            search_file_name = st.text_input(label="File Name")
+            search_created_on = st.date_input("Created on", datetime.today())
+            button = st.form_submit_button("Get File records")
 
 if button:
     if validate_search_input_details():
