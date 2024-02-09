@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
-import datetime import datetime
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 import web_services as ws
@@ -50,10 +50,10 @@ def input_details_to_json() -> dict:
     myform_json = {"record": {"id": 0,
                     "file_name": "-",
                     "doctor_first_name": doctor_first_name if len(doctor_first_name.strip()) else "N/A",
-                    "doctor_last_name": doctor_last_name if len(doctor_last_name.strip()) else "N/A",}
+                    "doctor_last_name": doctor_last_name if len(doctor_last_name.strip()) else "N/A"},
                    "patient": {"id": 0,
-                               "firstname": firstname,
-                               "lastname": lastname,
+                               "firstname": first_name,
+                               "lastname": last_name,
                                "gender": gender,
                                "age": age,
                                "hypertension": 1 if hypertension == "yes" else 0,
@@ -100,8 +100,8 @@ def data_frame_style_display(data: pd.DataFrame) -> pd.DataFrame:
     data["age"] = data['age'].apply(lambda x: int(x))
     data["hypertension"] = data["hypertension"].apply(lambda x: "Yes" if x == 1 else "No")
     data["heart_disease"] = data["heart_disease"].apply(lambda x: "Yes" if x == 1 else "No")
-    data["bmi"] = data["bmi"].map(float_map)
-    data["avg_glucose_level"] = data["avg_glucose_level"].map(float_map)
+    data["bmi"] = data["bmi"].map(float_format)
+    data["avg_glucose_level"] = data["avg_glucose_level"].map(float_format)
     data.drop("record_id", axis=1, inplace=True, errors="ignore")
     data.drop("id", axis=1, inplace=True, errors="ignore")
     st.dataframe(data.style.applymap(data_frame_style_color_neg, subset=["prediction"]))
