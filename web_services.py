@@ -15,7 +15,6 @@ def get_prediction(features: dict) -> int:
     :param features: _type_: _description_
     :return:
     """
-
     url = BACKEND_SERVER + "predict"
     response = requests.get(url, json=features)
     if response.status_code == 200:

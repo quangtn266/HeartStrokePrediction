@@ -232,8 +232,7 @@ with st.sidebar.expander("Single Prediction"):
 if submit_button:
     if validate_patient_input_details():
         prediction = get_prediction()
-        message = f"{first_name} {last_name} You are at risk of a stroke!" if prediction == 1 else \
-            f"{first_name} {last_name} You are safe to slay another day."
+        message = f"{first_name} {last_name} You are at risk of a stroke!" if prediction == 1 else f"{first_name} {last_name} You are safe to slay another day: )"
         message_color = 'red' if prediction == 1 else 'green'
         st.markdown(f"<h3 style='text-align: left;color:{message_color}'> {(message)} </h3>", unsafe_allow_html=True)
         if prediction == 1:
