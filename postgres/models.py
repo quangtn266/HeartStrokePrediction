@@ -6,12 +6,12 @@ from sqlalchemy.orm import relationship
 
 class Patient(Base):
     __tablename__ = "patient"
-    id = Column(Integer, primary_key=True, autoincrement=True, nulltable=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     record_id = Column(Integer, ForeignKey("record.id"))
     firstname = Column(String(35), nullable=False)
     lastname = Column(String(35), nullable=False)
     gender = Column(String(8), nullable=False)
-    age = Column(Float, nullabel=False)
+    age = Column(Float, nullable=False)
     hypertension = Column(Boolean, default=False)
     heart_disease = Column(Boolean, default=False)
     ever_married = Column(String(35), nullable=False)

@@ -4,7 +4,7 @@ sys.path.insert(0, '../stroke_prediction')
 sys.path.insert(0, '../postgres')
 
 # ML API
-from stroke_prediction.inference import make_prediction
+#from stroke_prediction.inference import make_prediction
 
 # FastAPI
 from typing import Optional
