@@ -125,7 +125,7 @@ def transform_encoder(df):
     file = "../models/OneHot.pkl"
     enc = pickle.load(open(file, "rb"))
     list_name = enc.get_feature_names_out(["work type", "smoking status"])
-    df[list_name] = enc.transformt(df[['work type', "smoking status"]])
+    df[list_name] = enc.transform(df[['work type', "smoking status"]])
     df = df.drop(columns=["work type", "smoking status"])
     return df
 
