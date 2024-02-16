@@ -192,6 +192,7 @@ def pipeline(df):
 
         df, ind = preprocess_gender(df)
         df = preprocess_ever_married(df)
+        df = preprocess_residence(df)
         df = transform_scaler_encoder(df)
 
         ids, df = store_id(df)

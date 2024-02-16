@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 import web_services as ws
 import streamlit as st
 
+
 # Make predictions Services
 
 def get_prediction() -> int:
@@ -21,6 +22,7 @@ def get_prediction() -> int:
         return prediction
     else:
         st.error("An error occurred while getting the predicton!")
+
 
 def get_prediction_document(filename: str, data: pd.DataFrame) -> pd.DataFrame:
     """
@@ -41,6 +43,7 @@ def get_prediction_document(filename: str, data: pd.DataFrame) -> pd.DataFrame:
         st.error("An error occurred while getting the file's prediction!")
         return predictions_file
 
+
 def input_details_to_json() -> dict:
     """
         _summary_: Takes User input and converts it to json format
@@ -48,9 +51,9 @@ def input_details_to_json() -> dict:
     """
 
     myform_json = {"record": {"id": 0,
-                    "file_name": "-",
-                    "doctor_first_name": doctor_first_name if len(doctor_first_name.strip()) else "N/A",
-                    "doctor_last_name": doctor_last_name if len(doctor_last_name.strip()) else "N/A"},
+                              "file_name": "-",
+                              "doctor_first_name": doctor_first_name if len(doctor_first_name.strip()) else "N/A",
+                              "doctor_last_name": doctor_last_name if len(doctor_last_name.strip()) else "N/A"},
                    "patient": {"id": 0,
                                "firstname": first_name,
                                "lastname": last_name,
@@ -65,8 +68,9 @@ def input_details_to_json() -> dict:
                                "bmi": bmi,
                                "smoking_status": smoking_status
                                }
-                    }
+                   }
     return myform_json
+
 
 ## DataFrame Stylers
 def data_frame_style_color_neg(val):
@@ -80,6 +84,7 @@ def data_frame_style_color_neg(val):
 
     return 'color: %s' % color
 
+
 def float_format(val):
     """
         _summary_ : Pandas dataframe styler
@@ -88,6 +93,7 @@ def float_format(val):
     """
 
     return "{:.2f}".format(val)
+
 
 def data_frame_style_display(data: pd.DataFrame) -> pd.DataFrame:
     """
@@ -121,6 +127,7 @@ def search_patient_by_fullname() -> pd.DataFrame:
     else:
         st.error("An error occurred while searching for Patient(s) Record(s)!")
 
+
 def search_patient_by_window_period() -> pd.DataFrame:
     """
         _summary_: Search patient records by window period
@@ -134,6 +141,7 @@ def search_patient_by_window_period() -> pd.DataFrame:
     else:
         st.error("An error occurred while searching for Patient(s) Record(s)!")
 
+
 def search_patients_file_by_date() -> pd.DataFrame:
     """
         _summary_: Search File patient records by data created on
@@ -146,6 +154,7 @@ def search_patients_file_by_date() -> pd.DataFrame:
         return search_results
     else:
         st.error("An error occurred while search for Patient(s) Record(s) !")
+
 
 # Form validations
 def validate_search_input_details() -> bool:
@@ -172,6 +181,7 @@ def validate_search_input_details() -> bool:
             return False
     return True
 
+
 def validate_patient_input_details() -> bool:
     """
         _summary_: Validate Patient inputs from User interface
@@ -185,6 +195,7 @@ def validate_patient_input_details() -> bool:
         st.warning("last name is required to add a patient")
         return False
     return True
+
 
 # Web interface Section
 st.title("Heart stroke prediction")
@@ -243,7 +254,7 @@ if submit_button:
 with st.sidebar.expander("Upload file for Predictions"):
     with st.form(key="predictions", clear_on_submit=True) as form:
         st.title("Select a file to generate predictions")
-        uploaded_files =st.file_uploader("Choose a CSV file", type={"csv"})
+        uploaded_files = st.file_uploader("Choose a CSV file", type={"csv"})
         prediction_button = st.form_submit_button("Submit")
         if uploaded_files:
             filename = uploaded_files.name
@@ -274,7 +285,7 @@ with st.sidebar.expander("Retrieve Past Predictions"):
 
         elif option == "Window Period":
             st.title("Select a window period")
-            search_patient_from_date = st.date_input("From Date", datetime.today()-relativedelta(years=1))
+            search_patient_from_date = st.date_input("From Date", datetime.today() - relativedelta(years=1))
             search_patient_to_date = st.date_input("To Date", datetime.today())
             button = st.form_submit_button("Get Patients Records")
 

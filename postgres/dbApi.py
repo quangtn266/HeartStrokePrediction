@@ -1,10 +1,10 @@
-from database import SessionLocal
+from database import  SessionLocal
 from sqlalchemy import and_, extract
 from venv import create
 from models import Patient, Record
 from typing import List
 
-DB = SessionLocal()
+db = SessionLocal()
 
 def create_record(new_record: Record) -> int:
     """
@@ -13,9 +13,9 @@ def create_record(new_record: Record) -> int:
     :return: record id
     """
 
-    DB.add(new_record)
-    DB.flush()
-    DB.commit()
+    db.add(new_record)
+   # db.flush()
+    db.commit()
 
     return new_record.id
 
@@ -26,9 +26,9 @@ def insert_patient(new_patient: Patient) -> int:
     :return: int: patient
     """
 
-    DB.add(new_patient)
-    DB.flush()
-    DB.commit()
+    db.add(new_patient)
+#    db.flush()
+    db.commit()
 
     return new_patient
 
@@ -40,7 +40,7 @@ def get_patient_by_fullname(first_name: str, last_name: str) -> List[Patient]:
     :return: models.Patient: _description_
     """
 
-    return DB.query(Patient).outerjoin(Record).filter(Record.file_name=="-",
+    return db.query(Patient).outerjoin(Record).filter(Record.file_name=="-",
         and_(Patient.firstname.ilike("%"+first_name+"%"),Patient.lastname.ilike("%"+last_name+"%"))).all()
 
 
@@ -51,7 +51,7 @@ def get_patients_by_window_period(filter: dict) -> List[Patient]:
     :return: List[Patient] _description_
     """
 
-    return DB.query(Patient).outerjoin(Record).filter(Record.file_name == "-",
+    return db.query(Patient).outerjoin(Record).filter(Record.file_name == "-",
                 extract('year', Record.createdon).between(filter['from_year'], (filter['to_year'])),
                 extract('month', Record.createdon).between(filter['from_month'], (filter['to_month'])),
                 extract('day', Record.createdon).between(filter['from_day'], (filter['to_day'])),).all()
@@ -66,7 +66,7 @@ def get_patients_file_by_date(filename: str, year: int, month: int, day: int) ->
     :return: models.Patient _description_
     """
 
-    file_hear = DB.query(Record).filter(Record.file_name.ilike("%"+filename+"%",),
+    file_hear = db.query(Record).filter(Record.file_name.ilike("%"+filename+"%",),
                     Record.doctor_first_name=="N/A", Record.doctor_last_name=="N/A",
                     extract('year', Record.createdon) == year, extract('month', Record.createdon) == month,
                     extract('day', Record.createdon) == day).first()
@@ -77,4 +77,4 @@ def get_patients_file_by_date(filename: str, year: int, month: int, day: int) ->
     id = file_hear.id
 
     # left join to get all the records for the patient
-    return DB.query(Patient).outjoin(Record).filter(Record.id == id).all()
+    return db.query(Patient).outjoin(Record).filter(Record.id == id).all()

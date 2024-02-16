@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+
 sys.path.insert(0, '../stroke_prediction')
 sys.path.insert(0, '../postgres')
 sys.path.append('../')
@@ -46,9 +47,11 @@ class Patient(BaseModel):
         # Serialize our sql to json
         orm_mode = True
 
+
 class Patient_in_db(Patient):
     record_id: int
     prediction: int
+
 
 class Record(BaseModel):
     id: Optional[int] = 0
@@ -65,47 +68,48 @@ class Record(BaseModel):
 # Database call
 
 def save_patient_record(record: Record, patient: Patient, result) -> int:
-
     new_record = models.Record(
-        file_name = record.file_name,
-        doctor_first_name = record.doctor_first_name,
-        doctor_last_name = record.doctor_last_name,
-        createdon = datetime.now()
+        id = 0,
+        file_name=record.file_name,
+        doctor_first_name=record.doctor_first_name,
+        doctor_last_name=record.doctor_last_name,
+        createdon=datetime.now()
     )
 
     record_id_in_db = db.create_record(new_record)
 
     patient_in_db = Patient_in_db(
-        **patient.dict(), record_id = record_id_in_db, prediction = result)
+        **patient.dict(), record_id=record_id_in_db, prediction=result)
 
     new_patient = models.Patient(
-        record_id = patient_in_db.record_id,
-        firstname = patient_in_db.firstname,
-        lastname = patient_in_db.lastnamem,
-        gender = patient_in_db.gender,
-        age = patient_in_db.age,
-        hypertension = patient_in_db.hypertension,
-        heart_disease = patient_in_db.heart_disease,
-        ever_married = patient_in_db.ever_marriedm,
-        work_type = patient_in_db.work_type,
-        Residence_type = patient_in_db.Residence_type,
-        avg_glucose_level = patient_in_db.avg_glucose_level,
-        bmi = patient_in_db.bmi,
-        smoking_status = patient_in_db.smoking_status,
-        prediction = patient_in_db.prediction
+        id = 0,
+        record_id=patient_in_db.record_id,
+        firstname=patient_in_db.firstname,
+        lastname=patient_in_db.lastname,
+        gender=patient_in_db.gender,
+        age=patient_in_db.age,
+        hypertension=patient_in_db.hypertension,
+        heart_disease=patient_in_db.heart_disease,
+        ever_married=patient_in_db.ever_married,
+        work_type=patient_in_db.work_type,
+        Residence_type=patient_in_db.Residence_type,
+        avg_glucose_level=patient_in_db.avg_glucose_level,
+        bmi=patient_in_db.bmi,
+        smoking_status=patient_in_db.smoking_status,
+        prediction=patient_in_db.prediction
     )
 
     result = db.insert_patient(new_patient)
 
     return result
 
-def save_list_patient_record(record: Record, patients, prediction_results) -> int:
 
+def save_list_patient_record(record: Record, patients, prediction_results) -> int:
     new_record = models.Record(
-        file_name = record.file_name,
-        doctor_first_name = record.doctor_first_name,
-        doctor_last_name = record.doctor_last_name,
-        createdon = datetime.now()
+        file_name=record.file_name,
+        doctor_first_name=record.doctor_first_name,
+        doctor_last_name=record.doctor_last_name,
+        createdon=datetime.now()
     )
 
     record_id_in_db = db.create_record(new_record)
@@ -113,22 +117,21 @@ def save_list_patient_record(record: Record, patients, prediction_results) -> in
     list_of_patients = []
 
     for patient, result in zip(patients, prediction_results):
-
         new_patient = models.Patient(
-            record_id = record_id_in_db,
-            firstname = patient.firstname,
-            lastname = patient.lastname,
-            gender = patient.gender,
-            age = patient.age,
-            hypertension = patient.hypertension,
-            heart_disease = patient.heart_disease,
-            ever_married = patient.ever_married,
-            work_type = patient.work_type,
-            Residence_type = patient.Resident_type,
-            avg_glucose_level = patient.avg_glucose_level,
-            bmi = patient.bmi,
-            smoking_status = patient.smoking_status,
-            prediction = result
+            record_id=record_id_in_db,
+            firstname=patient.firstname,
+            lastname=patient.lastname,
+            gender=patient.gender,
+            age=patient.age,
+            hypertension=patient.hypertension,
+            heart_disease=patient.heart_disease,
+            ever_married=patient.ever_married,
+            work_type=patient.work_type,
+            Residence_type=patient.Resident_type,
+            avg_glucose_level=patient.avg_glucose_level,
+            bmi=patient.bmi,
+            smoking_status=patient.smoking_status,
+            prediction=result
         )
 
         list_of_patients.append(new_patient)
@@ -155,6 +158,7 @@ def make_one_prediction(record: Record, patient: Patient) -> dict:
 
     return {"prediction": prediction}
 
+
 def make_multiple_prediction(record: Record, patients: List[Patient]):
     """
         _summary_: Make a prediction for multiple patients
@@ -172,16 +176,19 @@ def make_multiple_prediction(record: Record, patients: List[Patient]):
 
     return dumps(prediction_df.to_dict('index'))
 
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
-        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content = jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
     )
+
 
 @app.get("/")
 def read_root():
     return {"message": "We are ready to go!"}
+
 
 @app.get("/predict")
 async def predict(record: Record, patient: Patient):
@@ -189,21 +196,23 @@ async def predict(record: Record, patient: Patient):
 
     return result
 
+
 @app.get("/prediction_multiple")
 async def predict_file(record: Record, patient: List[Patient]):
     result = make_multiple_prediction(record, patient)
 
     return result
 
+
 @app.get("/search/patient/{firstname}&{lastname}", response_model=List[Patient_in_db], status_code=200)
-async def get_patient_by_name(firstname: str, lastname:str):
+async def get_patient_by_name(firstname: str, lastname: str):
     patients = db.get_patient_by_full_name(firstname, lastname)
 
     return patients
 
-@app.get("/search/patient/period/{fromdate}&{todate}", response_model = List[Patient_in_db], status_code=200)
-async def get_patients_by_window_period(fromdate:str, todate: str) -> List[Patient]:
 
+@app.get("/search/patient/period/{fromdate}&{todate}", response_model=List[Patient_in_db], status_code=200)
+async def get_patients_by_window_period(fromdate: str, todate: str) -> List[Patient]:
     from_to_dict = dict()
     from_to_dict["from_year"] = fromdate.split("-")[0]
     from_to_dict["from_month"] = fromdate.split("-")[1]
@@ -216,9 +225,9 @@ async def get_patients_by_window_period(fromdate:str, todate: str) -> List[Patie
 
     return patients
 
+
 @app.get("/search/file/{filename}&{createdon}", response_model=List[Patient_in_db], status_code=200)
 async def get_patient_by_file_name(filename: str, createdon: str):
-
     year = createdon.split("-")[0]
     month = createdon.split("-")[1]
     day = createdon.split("-")[2]
